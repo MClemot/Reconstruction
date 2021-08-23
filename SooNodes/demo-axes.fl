@@ -1,0 +1,84 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0306
+header_name {.h}
+code_name {.cxx}
+decl {\#include <FL/Fl.H>} {private local
+}
+
+decl {\#include <Misc.h>} {private local
+}
+
+decl {\#include <SooNode.h>} {private global
+}
+
+decl {\#include "demo-axes-Scene.h"} {private global
+}
+
+decl {using namespace std;} {private local
+}
+
+decl {GLuint SooNode::key_max = 0;} {private global
+}
+
+decl {MapPtrSooNode SooNode::map;} {private global
+}
+
+decl {Scene * scene;} {private local
+}
+
+Function {} {open
+} {
+  code {scene = new Scene();} {}
+  code {UserInterface ui;} {}
+  code {ui.show();} {}
+}
+
+class UserInterface {open
+} {
+  Function {UserInterface()} {open
+  } {
+    Fl_Window window {
+      label {Scene 3D} open
+      xywh {1822 137 466 398} type Double box UP_BOX resizable visible
+    } {
+      Fl_Menu_Bar menubar {
+        label {Menu Bar}
+        xywh {0 0 465 25}
+      } {
+        MenuItem {} {
+          label Quit
+          callback {exit(0);}
+          xywh {20 20 100 20} shortcut 0x80071 labeltype EMBOSSED_LABEL labelfont 1
+        }
+      }
+      Fl_Button home {
+        callback {viewer->home();
+viewer->redraw();} selected
+        image {../icons/home.gif} xywh {29 50 25 25} selection_color 207
+      }
+      Fl_Button display_axes {
+        callback {scene->group_axes->changeDisplay();
+viewer->redraw();}
+        image {../icons/display_axis.xpm} xywh {64 51 25 25} type Toggle value 1 selection_color 3
+      }
+    }
+    Fl_Window window_viewer {open
+      xywh {1235 283 400 400} type Double hide resizable
+    } {
+      Fl_Box viewer {
+        label {Viewer manipulated with a trackball}
+        xywh {0 0 400 400} resizable
+        code0 {\#include <GLViewer.h>}
+        code1 {viewer->scene = scene;}
+        class GLViewer
+      }
+    }
+  }
+  Function {show()} {open
+  } {
+    code {window->show();} {}
+    code {window_viewer->show();} {}
+    code {viewer->show();} {}
+    code {viewer->redraw();} {}
+  }
+}

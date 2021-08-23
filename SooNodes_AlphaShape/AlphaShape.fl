@@ -1,0 +1,539 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0306
+header_name {.h}
+code_name {.cxx}
+decl {\#include "AlphaShape-Scene.h"} {private global
+}
+
+decl {using namespace std;} {private local
+}
+
+decl {GLuint SooNode::key_max = 0;} {private global
+}
+
+decl {MapPtrSooNode SooNode::map;} {private global
+}
+
+decl {Scene * scene;} {private local
+}
+
+Function {} {open
+} {
+  code {scene = new Scene();} {}
+  code {UserInterface ui;} {}
+  code {ui.show();} {}
+}
+
+class UserInterface {open
+} {
+  Function {UserInterface()} {open
+  } {
+    Fl_Window window {
+      label {Scene 3D}
+      callback {;} open
+      xywh {897 33 476 914} type Double box UP_BOX resizable visible
+    } {
+      Fl_Menu_Bar menubar {
+        label {Menu Bar}
+        xywh {0 0 465 25}
+      } {
+        Submenu file {
+          label File open
+          xywh {5 5 100 20} labeltype ENGRAVED_LABEL labelfont 1
+        } {
+          MenuItem {} {
+            label {Load .obj...}
+            callback {char *newfile = fl_file_chooser("Load File ?", "*.obj", "../../Data/3d/croissants.obj");
+if (!newfile) return;
+{
+scene->LoadObject(newfile);
+viewer->redraw();
+}
+label_alpha->value(scene->alpha);
+label_simplices->value(scene->numberSimplices);
+label_vertices->value(scene->numberVertices);
+label_edges->value(scene->numberEdges);
+label_triangles->value(scene->numberTriangles);
+label_tetrahedra->value(scene->numberTetrahedra);
+slider_alpha->activate();
+slider_simplices->activate();
+label_simplices->activate();}
+            xywh {5 5 31 20}
+            code0 {\#include <FL/Fl_File_Chooser.H>}
+          }
+          MenuItem {} {
+            label {Load .smf...}
+            callback {char *newfile = fl_file_chooser("Load File ?", "*.smf", "../../Data/3d/helix.smf");
+if (!newfile) return;
+{
+scene->LoadObject(newfile);
+viewer->redraw();
+}
+label_alpha->value(scene->alpha);
+label_simplices->value(scene->numberSimplices);
+label_vertices->value(scene->numberVertices);
+label_edges->value(scene->numberEdges);
+label_triangles->value(scene->numberTriangles);
+label_tetrahedra->value(scene->numberTetrahedra);
+slider_alpha->activate();
+slider_simplices->activate();
+label_simplices->activate();}
+            xywh {15 15 31 20}
+            code0 {\#include <FL/Fl_File_Chooser.H>}
+          }
+          MenuItem {} {
+            label {Random points on circle}
+            callback {const char *str = fl_input("Number of vertices ?", "6");
+if (!str) return;
+scene->randomPointsOnCircle(std::stoi(std::string(str)));
+viewer->redraw();
+label_alpha->value(scene->alpha);
+label_simplices->value(scene->numberSimplices);
+label_vertices->value(scene->numberVertices);
+label_edges->value(scene->numberEdges);
+label_triangles->value(scene->numberTriangles);
+label_tetrahedra->value(scene->numberTetrahedra);
+slider_alpha->activate();
+slider_simplices->activate();
+label_simplices->activate();}
+            xywh {0 0 100 20}
+          }
+        }
+        Submenu {} {
+          label Display open
+          xywh {5 5 62 20} labeltype EMBOSSED_LABEL labelfont 1
+        } {
+          MenuItem {} {
+            label SooNodes
+            callback {cout << "Root :" << endl;
+scene->root->printTree();}
+            xywh {55 55 100 20}
+          }
+          MenuItem {} {
+            label {Camera position}
+            callback {cout << "Camera position :" << endl;
+scene->PrintCameraPosition();}
+            xywh {30 30 100 20}
+          }
+          MenuItem {} {
+            label Range
+            callback {scene->PrintRange();}
+            xywh {40 40 100 20}
+          }
+          MenuItem {} {
+            label {Object vertices}
+            callback {cout << "Object [" << scene->object_short_name << "] :" << endl;
+Write(cout, scene->vertices);}
+            xywh {30 30 100 20}
+          }
+        }
+        Submenu {} {
+          label Save open
+          xywh {55 55 62 20} labeltype EMBOSSED_LABEL labelfont 1
+        } {
+          MenuItem {} {
+            label Image
+            callback {string file_name;
+
+if (scene->object_short_name.empty())
+  file_name = "image.tiff";
+else
+  file_name = "image-" + scene->object_short_name + ".tiff";
+
+cout << "Saving image in [ " << file_name << " ]" << endl;
+
+viewer->SaveTiff(file_name, 0, 0, 400, 400);}
+            xywh {100 100 31 20}
+            code0 {\#include <Misc.h>}
+          }
+        }
+        MenuItem {} {
+          label Quit
+          callback {exit(0);}
+          xywh {20 20 100 20} shortcut 0x400071 labeltype EMBOSSED_LABEL labelfont 1
+        }
+      }
+      Fl_Button home {
+        callback {viewer->home();
+viewer->redraw();}
+        image {../icons/home.gif} xywh {29 50 25 25} selection_color 207
+      }
+      Fl_Button display_axes {
+        callback {scene->group_axes->changeDisplay();
+viewer->redraw();}
+        image {../icons/display_axis.xpm} xywh {64 51 25 25} type Toggle selection_color 3
+      }
+      Fl_Button display_vertices {
+        callback {scene->group_vertices->changeDisplay();
+viewer->redraw();}
+        image {../icons/display_pointcloud.xpm} xywh {31 154 25 25} type Toggle value 1 selection_color 3
+      }
+      Fl_Button display_vertices_embellished {
+        label S
+        callback {scene->group_vertices_embellished->setDisplay(o->value()*(1-button_weighted->value()));
+scene->group_radius_spheres->setDisplay(o->value()*button_weighted->value());
+viewer->redraw();}
+        xywh {31 189 25 25} type Toggle selection_color 3
+      }
+      Fl_Button zoom_plus {
+        callback {scene->zoom(1);
+viewer->redraw();}
+        image {../icons/zoom+.gif} xywh {115 47 33 33} selection_color 207
+      }
+      Fl_Button zoom_moins {
+        callback {scene->zoom(-1);
+viewer->redraw();}
+        image {../icons/zoom-.gif} xywh {150 47 33 33} selection_color 207
+      }
+      Fl_Button zoom_to_fit {
+        callback {scene->UpdateRange();
+viewer->redraw();}
+        image {../icons/zoom_to_fit.gif} xywh {185 47 33 33} selection_color 207
+      }
+      Fl_Button {} {
+        label {X+}
+        callback {scene->translate(0.1,0.0,0.0);
+viewer->redraw();}
+        xywh {255 47 33 33} selection_color 207
+      }
+      Fl_Button {} {
+        label {X-}
+        callback {scene->translate(-0.1,0.0,0.0);
+viewer->redraw();}
+        xywh {255 87 33 33} selection_color 207
+      }
+      Fl_Button {} {
+        label {Y+}
+        callback {scene->translate(0.0,0.1,0.0);
+viewer->redraw();}
+        xywh {295 47 33 33} selection_color 207
+      }
+      Fl_Button {} {
+        label {Y-}
+        callback {scene->translate(0.0,-0.1,0.0);
+viewer->redraw();}
+        xywh {295 87 33 33} selection_color 207
+      }
+      Fl_Button {} {
+        label {Z+}
+        callback {scene->translate(0.0,0.0,0.1);
+viewer->redraw();}
+        xywh {335 47 33 33} selection_color 207
+      }
+      Fl_Button {} {
+        label {Z-}
+        callback {scene->translate(0.0,0.0,-0.1);
+viewer->redraw();}
+        xywh {335 87 33 33} selection_color 207
+      }
+      Fl_Value_Input param_size_points_vertices {
+        label {Size of points}
+        callback {scene->param_size_points_vertices = (double)o->value();
+scene->group_vertices->touch();
+viewer->redraw();}
+        xywh {76 154 66 25} align 8 minimum 1 maximum 6 step 0.2 value 2 textsize 10
+      }
+      Fl_Button display_selected_vertex {
+        label Click
+        callback {scene->group_selected_vertex->changeDisplay();
+viewer->redraw();}
+        xywh {365 855 25 25} type Toggle value 1 selection_color 3 align 296
+      }
+      Fl_Value_Input param_size_spheres {
+        label {Size of spheres}
+        callback {scene->param_size_spheres_vertices = (double)o->value();
+scene->group_vertices_embellished->touch();
+viewer->redraw();}
+        xywh {76 189 66 25} align 8 minimum 0.0001 maximum 0.2 step 0.0001 value 0.01 textsize 10
+      }
+      Fl_Box {} {
+        label Vertices
+        xywh {20 114 86 30} labelfont 1 labelsize 18 labelcolor 120 align 20
+      }
+      Fl_Box {} {
+        label Selection
+        xywh {360 815 86 30} labelfont 1 labelsize 18 labelcolor 120 align 20
+      }
+      Fl_Box {} {
+        label Triangles
+        xywh {16 331 86 30} labelfont 1 labelsize 18 labelcolor 120 align 20
+      }
+      Fl_Button display_triangles {
+        callback {scene->group_triangles->changeDisplay();
+viewer->redraw();}
+        image {../icons/display_surface.xpm} xywh {30 403 25 25} type Toggle value 1 selection_color 3
+      }
+      Fl_Value_Input coef_transparency {
+        label {Transparency coefficient}
+        callback {scene->group_triangles->material_filled->setTransparency( (double)o->value() );
+viewer->redraw();}
+        xywh {150 368 30 25} labelsize 12 align 8 step 0.01 value 0.2 textsize 10
+      }
+      Fl_Button transparent {
+        label Transparent
+        callback {scene->transparent = ! scene->transparent;
+if (scene->transparent) {
+  scene->group_triangles->material_filled->setTransparency((double)coef_transparency->value());
+  coef_transparency->show();
+  }
+else {
+  scene->group_triangles->material_filled->setTransparency(0.0);
+  coef_transparency->hide();
+  }
+viewer->redraw();}
+        xywh {30 368 90 25} type Toggle value 1 selection_color 3
+      }
+      Fl_Button MATERIAL_FILLED_AND_OUTLINES {
+        callback {scene->group_triangles->set(SooGroupMaterial::FILLED_AND_OUTLINES);
+viewer->redraw();}
+        image {../icons/ico0.xpm} xywh {188 403 25 25} type Radio selection_color 3
+      }
+      Fl_Button MATERIAL_OUTLINES {
+        callback {scene->group_triangles->set(SooGroupMaterial::OUTLINES);
+viewer->redraw();}
+        image {../icons/ico1.xpm} xywh {85 403 25 25} type Radio selection_color 3
+      }
+      Fl_Button MATERIAL_FILLED {
+        callback {scene->group_triangles->set(SooGroupMaterial::FILLED);
+viewer->redraw();}
+        image {../icons/ico2.xpm} xywh {136 403 25 25} type Radio value 1 selection_color 3
+      }
+      Fl_Button MATERIAL_FILLED_AND_LINES {
+        callback {scene->group_triangles->set(SooGroupMaterial::FILLED_AND_LINES);
+viewer->redraw();}
+        image {../icons/ico3.xpm} xywh {162 403 25 25} type Radio selection_color 3
+      }
+      Fl_Button MATERIAL_LINES {
+        callback {scene->group_triangles->set(SooGroupMaterial::LINES);
+viewer->redraw();}
+        image {../icons/ico4.xpm} xywh {111 403 25 25} type Radio selection_color 3
+      }
+      Fl_Box {} {
+        label {Alpha complex}
+        xywh {20 530 86 30} labelfont 1 labelsize 18 labelcolor 120 align 20
+      }
+      Fl_Slider slider_alpha {
+        callback {scene->updateAlpha(scene->alphamax*o->value());
+label_alpha->value(scene->alphamax*o->value());
+label_simplices->value(scene->numberSimplices);
+label_vertices->value(scene->numberVertices);
+label_edges->value(scene->numberEdges);
+label_triangles->value(scene->numberTriangles);
+label_tetrahedra->value(scene->numberTetrahedra);
+label_betti->value(scene->betti.c_str());
+viewer->redraw();}
+        xywh {15 564 280 25} type Horizontal value 1
+      }
+      Fl_Slider slider_simplices {
+        callback {scene->updateAlpha(0., o->value()*(scene->N-1));
+label_alpha->value(scene->alpha);
+label_simplices->value(scene->numberSimplices);
+label_vertices->value(scene->numberVertices);
+label_edges->value(scene->numberEdges);
+label_triangles->value(scene->numberTriangles);
+label_tetrahedra->value(scene->numberTetrahedra);
+label_betti->value(scene->betti.c_str());
+viewer->redraw();}
+        xywh {15 593 280 25} type Horizontal
+      }
+      Fl_Box {} {
+        label Tetrahedra
+        xywh {20 452 86 30} labelfont 1 labelsize 18 labelcolor 120 align 20
+      }
+      Fl_Button {} {
+        callback {scene->group_tetrahedra->changeDisplay();
+viewer->redraw();}
+        image {../icons/display_convex_hull.xpm} xywh {30 484 25 25} type Toggle value 1 selection_color 3
+      }
+      Fl_Box {} {
+        label Edges
+        xywh {20 229 86 30} labelfont 1 labelsize 18 labelcolor 120 align 20
+      }
+      Fl_Button {} {
+        callback {scene->group_edges->changeDisplay();
+viewer->redraw();}
+        image {../icons/display_boundary_edges.xpm} xywh {31 263 25 25} type Toggle value 1 selection_color 3
+      }
+      Fl_Value_Output label_vertices {
+        label {Vertices }
+        xywh {340 635 120 25}
+      }
+      Fl_Value_Output label_edges {
+        label {Edges }
+        xywh {340 670 120 25}
+      }
+      Fl_Value_Output label_triangles {
+        label {Triangles }
+        xywh {340 705 120 25}
+      }
+      Fl_Value_Output label_tetrahedra {
+        label {Tetrahedra }
+        xywh {340 740 120 25}
+      }
+      Fl_Value_Output label_alpha {
+        label Alpha
+        xywh {340 564 120 25}
+      }
+      Fl_Value_Input param_width_edges {
+        label {Width of edges}
+        callback {scene->group_edges->drawstyle->setLineWidth((double)o->value());
+scene->group_edges->touch();
+viewer->redraw();}
+        xywh {75 263 66 25} align 8 minimum 1 maximum 10 step 0.2 value 1
+      }
+      Fl_Button {} {
+        callback {scene->group_voronoi->changeDisplay();
+//scene->group_debug->changeDisplay();
+viewer->redraw();}
+        image {../icons/display_boundary_edges.xpm} xywh {31 295 25 25} type Toggle selection_color 3
+      }
+      Fl_Value_Input param_width_voronoi {
+        label {Width of Voronoi edges}
+        callback {scene->group_voronoi->drawstyle->setLineWidth((double)o->value());
+scene->group_voronoi->touch();
+viewer->redraw();}
+        xywh {75 295 66 25} align 8 minimum 1 maximum 10 step 0.2 value 1
+      }
+      Fl_Button button_weighted {
+        label Weighted
+        callback {scene->voronoi_weighted = 1 - scene->voronoi_weighted;}
+        xywh {175 532 75 25} type Toggle selection_color 3
+      }
+      Fl_Value_Input label_simplices {
+        label Simplices
+        callback {scene->updateAlpha(0., min(o->value(), scene->N-1));
+label_alpha->value(scene->alpha);
+label_vertices->value(scene->numberVertices);
+label_edges->value(scene->numberEdges);
+label_triangles->value(scene->numberTriangles);
+label_tetrahedra->value(scene->numberTetrahedra);
+slider_simplices->value(o->value()/scene->N);
+label_betti->value(scene->betti.c_str());
+viewer->redraw();}
+        xywh {360 593 100 25} when 4
+      }
+      Fl_Button {} {
+        label {Collapse (SB)}
+        callback {scene->collapseSB();
+viewer->redraw();
+label_simplices->value(scene->numberSimplices);
+label_vertices->value(scene->numberVertices);
+label_edges->value(scene->numberEdges);
+label_triangles->value(scene->numberTriangles);
+label_tetrahedra->value(scene->numberTetrahedra);
+slider_alpha->deactivate();
+slider_simplices->deactivate();
+label_simplices->deactivate();
+label_betti->value(scene->betti.c_str());}
+        tooltip {Collapse with Skeleton Blocker} xywh {257 532 97 25}
+      }
+      Fl_Value_Input {} {
+        label {Weighted vertices factor}
+        callback {scene->param_factor_spheres = (double)o->value();
+scene->group_radius_spheres->touch();
+viewer->redraw();}
+        xywh {260 189 50 25} align 8 step 0.01 value 1
+      }
+      Fl_Box {} {
+        label {Proximity flag}
+        xywh {19 665 86 30} labelfont 1 labelsize 18 labelcolor 120 align 20
+      }
+      Fl_Value_Input param_threshold_lfs {
+        label {Threshold for LFS prox. graph}
+        callback {scene->param_threshold_lfs = (double)o->value();}
+        xywh {14 700 40 25} align 8 maximum 2 step 0.01 value 1
+      }
+      Fl_Value_Input param_k_neighbors {
+        label {k for k-NN prox. graph}
+        callback {scene->param_k_neighbors = o->value();}
+        xywh {14 730 40 25} align 8 minimum 1 maximum 50 step 1 value 10
+      }
+      Fl_Group {} {
+        label Method open
+        xywh {20 790 145 105} labelfont 1 labelsize 18 labelcolor 120
+      } {
+        Fl_Button {} {
+          label {Alpha complex}
+          callback {scene->method = 0;}
+          xywh {35 800 110 25} type Radio value 1 selection_color 3
+        }
+        Fl_Button {} {
+          label {LFS prox. flag}
+          callback {scene->method = 1;}
+          xywh {35 830 110 25} type Radio selection_color 3
+        }
+        Fl_Button {} {
+          label {k-NN prox. flag}
+          callback {scene->method = 2;}
+          xywh {35 860 110 25} type Radio selection_color 3
+        }
+      }
+      Fl_Button {} {
+        label {w/ collapses}
+        callback {scene->mode2_collapse = o->value();}
+        xywh {160 860 85 25} type Toggle selection_color 3
+      }
+      Fl_Check_Button {} {
+        label {Betti numbers :}
+        callback {scene->display_betti = o->value();} selected
+        xywh {15 625 20 25} down_box DOWN_BOX value 1
+      }
+      Fl_Output label_betti {
+        xywh {135 625 110 25}
+      }
+      Fl_Button {} {
+        label {Collapse (ST)}
+        callback {scene->collapse();
+viewer->redraw();
+label_simplices->value(scene->numberSimplices);
+label_vertices->value(scene->numberVertices);
+label_edges->value(scene->numberEdges);
+label_triangles->value(scene->numberTriangles);
+label_tetrahedra->value(scene->numberTetrahedra);
+slider_alpha->deactivate();
+slider_simplices->deactivate();
+label_simplices->deactivate();
+label_betti->value(scene->betti.c_str());}
+        tooltip {Collapse with Simplex Tree} xywh {361 532 98 25}
+      }
+      Fl_Button {} {
+        label {Collapse to lower convex hull}
+        callback {scene->collapseToLowerConvexHull();
+viewer->redraw();
+label_simplices->value(scene->numberSimplices);
+label_vertices->value(scene->numberVertices);
+label_edges->value(scene->numberEdges);
+label_triangles->value(scene->numberTriangles);
+label_tetrahedra->value(scene->numberTetrahedra);
+slider_alpha->deactivate();
+slider_simplices->deactivate();
+label_simplices->deactivate();
+label_betti->value(scene->betti.c_str());}
+        xywh {257 500 202 25}
+      }
+      Fl_Check_Button {} {
+        label {Betti debug}
+        callback {scene->betti_debug = o->value();}
+        xywh {15 645 25 25} down_box DOWN_BOX value 1
+      }
+    }
+    Fl_Window window_viewer {open
+      xywh {729 71 1000 1000} type Double hide resizable
+    } {
+      Fl_Box viewer {
+        label {Viewer manipulated with a trackball}
+        xywh {0 0 1000 1000} resizable
+        code0 {\#include <GLViewer.h>}
+        code1 {viewer->scene = scene;}
+        class GLViewer
+      }
+    }
+  }
+  Function {show()} {open
+  } {
+    code {window->show();} {}
+    code {window_viewer->show();} {}
+    code {viewer->show();} {}
+    code {viewer->redraw();} {}
+  }
+}

@@ -1,0 +1,140 @@
+OBJECTS_IN_LIBRARY = \
+	Misc.o \
+	MiscMath.o \
+	Range.o \
+	Algorithms.o \
+	SooNode.o \
+	SooAxes.o \
+	SooBox.o \
+	SooCamera.o \
+	SooCircle.o \
+	SooColor.o \
+	SooDrawStyle.o \
+	SooDrawable.o \
+	SooGlutModel.o \
+	SooGroup.o \
+	SooGroupRender.o \
+	SooSwitch.o \
+	SooLight.o \
+	SooMaterial.o \
+	SooSphere.o \
+	SooPoints.o \
+	SooTriangles.o \
+	SooGroupMaterial.o \
+	SooGroupColor.o \
+	SooPalette.o \
+	Trackball.o \
+	Idle.o \
+	GLViewer.o \
+	GLScene.o
+
+LIBRARY_TO_CREATE = ../lib/lib_soonodes.a
+
+LIBCOMMAND      = ar cr
+
+RANLIB          = ranlib
+
+CXX		= clang++ #$(shell fltk-config --cxx)
+DEBUG		= -g
+CXXFLAGS	= $(shell fltk-config --use-gl --use-images --cxxflags ) -I.
+LDFLAGS		= $(shell fltk-config --use-gl --use-images --ldflags )
+LDSTATIC	= $(shell fltk-config --use-gl --use-images --ldstaticflags )
+LINK		= $(CXX)
+
+CXXFLAGS_CGAL 		= -DBOOST_ALL_NO_LIB -DCGAL_USE_GMPXX=1 -isystem /usr/local/include -O3 -DNDEBUG -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk -std=gnu++14 #-MD -MT -MF
+
+LDFLAGS_CGAL 	= -O3 -DNDEBUG -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names
+
+LD_CGAL			= /usr/local/lib/libgmpxx.dylib /usr/local/lib/libmpfr.dylib /usr/local/lib/libgmp.dylib
+
+
+################################################################
+
+.SUFFIXES: .o .cxx .fl
+
+all: demo-axes $(LIBRARY_TO_CREATE)
+
+$(LIBRARY_TO_CREATE): $(OBJECTS_IN_LIBRARY)
+	@echo $(LIBCOMMAND) $@ ...
+	@$(LIBCOMMAND) $@ $(OBJECTS_IN_LIBRARY)
+	@$(RANLIB) $@
+
+demo-axes: demo-axes.o demo-axes-Scene.o $(OBJECTS_IN_LIBRARY)
+	@echo "*************** Linking $@ ..."
+	$(LINK) -o $@ $(OBJECTS_IN_LIBRARY) demo-axes-Scene.o demo-axes.o $(LDSTATIC) -ltiff
+
+demo-axes.h:  demo-axes.fl
+demo-axes.cxx:  demo-axes.fl
+
+
+
+.cxx.o:
+	@echo  "*************** Compiling $<..."
+	$(CXX) $(CXXFLAGS)  $(CXXFLAGS_CGAL) $(DEBUG) -Wno-deprecated-declarations -c $<
+
+.fl.cxx .fl.h:
+	@echo "*************** $<.fl ---> $<.cxx, $<.h"
+	fluid -c $<
+
+
+################################################################
+
+info:
+	@echo CXX = $(CXX)
+	@echo CXXFLAGS = $(CXXFLAGS)
+	@echo LDFLAGS = $(LDFLAGS)
+	@echo LDSTATIC = $(LDSTATIC)
+	@echo $(OBJECTS_IN_LIBRARY)
+
+clean :
+	rm -f *~ $(OBJECTS_IN_LIBRARY) demo-axes.o demo-axes-Scene.o core
+
+empty: clean
+	rm -f demo-axes demo-axes.h demo-axes.cxx
+
+depend:
+	makedepend -- -O -DHACK -Y. -- $(OBJECTS_IN_LIBRARY:%.o=%.cxx) demo-axes.cxx demo-axes-Scene.cxx
+# DO NOT DELETE
+
+Misc.o: Misc.h SooNode.h
+MiscMath.o: MiscMath.h
+Range.o: MiscMath.h Range.h types-cgal.h
+Algorithms.o: Algorithms.h types-cgal.h
+SooNode.o: SooNode.h
+SooAxes.o: SooAxes.h SooDrawable.h SooNode.h
+SooBox.o: SooBox.h SooDrawable.h SooNode.h
+SooCamera.o: SooCamera.h SooNode.h
+SooCircle.o: SooCircle.h SooDrawable.h SooNode.h MiscMath.h
+SooColor.o: SooColor.h SooDrawable.h SooNode.h
+SooDrawStyle.o: SooDrawStyle.h SooDrawable.h SooNode.h
+SooDrawable.o: SooDrawable.h SooNode.h
+SooGlutModel.o: SooGlutModel.h SooDrawable.h SooNode.h
+SooGroup.o: SooGroup.h SooNode.h
+SooGroupRender.o: SooGroupRender.h SooGroup.h SooNode.h
+SooSwitch.o: SooSwitch.h SooNode.h
+SooLight.o: SooLight.h SooNode.h
+SooMaterial.o: SooMaterial.h SooDrawable.h SooNode.h
+SooSphere.o: SooSphere.h SooDrawable.h SooNode.h
+SooPoints.o: SooSphere.h SooDrawable.h SooNode.h SooPoints.h SooMaterial.h
+SooPoints.o: types-cgal.h Range.h
+SooTriangles.o: MiscMath.h SooTriangles.h SooDrawable.h SooNode.h
+SooTriangles.o: SooMaterial.h types-cgal.h
+SooGroupMaterial.o: SooGroupMaterial.h SooDrawable.h SooNode.h SooGroup.h
+SooGroupMaterial.o: SooGroupRender.h SooColor.h SooMaterial.h SooDrawStyle.h
+SooGroupColor.o: SooGroupColor.h SooGroupRender.h SooGroup.h SooNode.h
+SooGroupColor.o: SooColor.h SooDrawable.h SooDrawStyle.h
+SooPalette.o: SooPalette.h SooMaterial.h SooDrawable.h SooNode.h SooColor.h
+Trackball.o: Trackball.h Mouse.h Quaternion.h Vector3D.h Matrix4x4.h
+Idle.o: Idle.h
+GLViewer.o: Idle.h Misc.h SooNode.h GLViewer.h SooCamera.h SooLight.h
+GLViewer.o: Quaternion.h Vector3D.h Matrix4x4.h Mouse.h Trackball.h GLScene.h
+GLViewer.o: Range.h types-cgal.h
+GLScene.o: GLScene.h SooNode.h Range.h types-cgal.h
+demo-axes.o: demo-axes.h GLViewer.h SooCamera.h SooNode.h SooLight.h
+demo-axes.o: Quaternion.h Vector3D.h Matrix4x4.h Mouse.h Trackball.h Idle.h
+demo-axes.o: GLScene.h Range.h types-cgal.h Misc.h demo-axes-Scene.h
+demo-axes.o: SooGroupRender.h SooGroup.h SooGroupColor.h SooColor.h
+demo-axes.o: SooDrawable.h SooDrawStyle.h
+demo-axes-Scene.o: Misc.h SooNode.h SooAxes.h SooDrawable.h demo-axes-Scene.h
+demo-axes-Scene.o: SooGroupRender.h SooGroup.h SooGroupColor.h SooColor.h
+demo-axes-Scene.o: SooDrawStyle.h GLScene.h Range.h types-cgal.h

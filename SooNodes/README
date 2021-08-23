@@ -1,0 +1,64 @@
+
+HIERARCHIE DES CLASSES SooXXXXX
+
+SooNode -> render - by_default - (set/get)Comment - (set/get/change)Display - printTree
+  |
+  |____ SooCamera -> render - by_default - initialize - print
+  |                         - (set/get)Alpha - (set/get)Beta - (set/get)Zoom
+  |                         - (set/get)Position - (set/get)Target - (set/get)Up
+  |                         - (set/get)FieldOfView - (set/get)AspectRatio
+  |                         - (set/get)ZNear - (set/get)ZFar
+  |
+  |____ SooLight -> render - by_default - drawArrow - print - isOn - printTree
+  |                        - (set/get)Ambient - (set/get)Diffuse - (set/get)Specular
+  |                        - (set/get)Position - (set/get)Alpha - (set/get)Beta - (set/get)Rho
+  |                        - (set/get)Directional - (set/get)SpotDirection - (set/get)SpotCutoff
+  |                        - (set/get)SpotExponent - (set/get)ConstantAttenuation
+  |                        - (set/get)LinearAttenuation - (set/get)QuadraticAttenuation
+  |
+  |____ SooGroup -> render - printTree
+  |       |                - addChild - removeChild - removeAllChildren
+  |       |
+  |       |____ SooGroupRender -> render - printTree
+  |                                      - (set/get)Blending (set/get)DepthMask
+  |
+  |____ SooDrawable -> render - draw - print - touch
+          |
+          |____ SooColor -> draw - by_default - print - printTree - (set/get)
+          |
+          |____ SooDrawStyle -> draw - by_default - printTree
+          |                          - (set/get)Style(FILLED/LINES/POINTS/INVISIBLE)
+          |                          - (set/get)PointSize - (set/get)LineWidth
+          |                          - (set/get)LinePattern
+          |
+          |____ SooMaterial -> draw - by_default - print
+          |                         - (set/get)Diffuse - (set/get)Ambient - (set/get)Emission
+          |                         - (set/get)Shininess - (set/get)Specular
+          |                         - (set/get)Transparency - set
+          |                         - set(EMERALD/JADE/OBSEDIAN/PEARL/RUBY/TURQUOISE/
+          |                         -     BRASS/BRONZE/CHROME/COPPER/GOLD/SILVER/
+          |                         -     PLASTIC_BLACK/PLASTIC_CYAN/PLASTIC_GREEN/PLASTIC_RED/
+          |                         -     PLASTIC_WHITE/PLASTIC_YELLOW/RUBBER_BLACK/RUBBER_CYAN/
+          |                         -     RUBBER_GREEN/RUBBER_RED/RUBBER_WHITE/RUBBER_YELLOW
+          |
+          |____ SooAxis -> draw - (set/get)Unit
+          |
+          |____ SooBox -> draw - (set/get)InfCorner - (set/get)SupCorner
+          |
+          |____ SooCircle -> draw - (set/get)Radius - (set/get)Center - (set/get)Axe
+          |
+          |____ SooSphere -> draw - by_default - (set/get)Radius - (set/get)Center
+          |                       - (set/get)Stacks - (set/get)Slices
+          |
+          |____ SooGlutModel -> draw - (set/get)Type(TORUS/TEAPOT/ICOSAHEDRON/DODECAHEDRON/
+                                                     CONE/CUBE/TETRAHEDRON/SPHERE)
+  
+
+
+
+
+
+
+
+
+
